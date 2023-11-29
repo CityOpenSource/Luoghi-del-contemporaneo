@@ -80,19 +80,11 @@
                             <svg height="82" class="icon" aria-hidden="true" style="width:305px!important">
                               <image style="width:305px!important" href="<?php echo get_template_directory_uri();?>/images/mic-logo.png"></image>
                             </svg>
-                            <!-- <div class="it-brand-text">
-                              <div class="it-brand-title">Luoghi del contemporaneo</div>
-                              <div class="it-brand-tagline d-none d-md-block">Portale ufficiale</div>
-                            </div> -->
                           </a>
                           <a href="/" title="Vai alla homepage">
                             <svg height="82" class="icon" aria-hidden="true">
                               <image xlink:href="<?php echo get_template_directory_uri();?>/svg/logo.svg"></image>
                             </svg>
-                            <!-- <div class="it-brand-text">
-                              <div class="it-brand-title">Luoghi del contemporaneo</div>
-                              <div class="it-brand-tagline d-none d-md-block">Portale ufficiale</div>
-                            </div> -->
                           </a>
                       </div>
                       <div class="it-right-zone">
