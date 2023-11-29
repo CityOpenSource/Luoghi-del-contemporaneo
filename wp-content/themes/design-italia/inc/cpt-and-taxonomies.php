@@ -282,7 +282,13 @@ function luoghi_save_meta_box( $post_id ) {
         if ( array_key_exists( $field, $_GET ) ) {
             update_post_meta( $post_id, $field, sanitize_text_field( $_GET[$field] ) );
         }
-     }
+    }
+    
+    foreach ( $fields as $field ) {
+        if ( array_key_exists( $field, $_POST ) ) {
+            update_post_meta( $post_id, $field, sanitize_text_field( $_POST[$field] ) );
+        }
+    }
 }
 add_action( 'add_meta_boxes', 'add_luoghi_form_meta_box' ); 
 add_action( 'save_post', 'luoghi_save_meta_box' );
@@ -417,6 +423,7 @@ function luoghi_form_meta_indirizzo_box($post) {
     FROM {$wpdb->prefix}luoghi_localita AS c 
     INNER JOIN {$wpdb->prefix}luoghi_province AS p ON c.localita_provincia_id = p.provincia_id
     INNER JOIN {$wpdb->prefix}luoghi_regioni AS r ON p.provincia_regione_id = r.regione_id 
+    ORDER BY c.localita_nome
     ";
     $regioni2 = $wpdb->get_results( $query, OBJECT ); 
     echo "
