@@ -148,8 +148,14 @@
               ?>
             </div>
             <div class="col-12 footer-items-wrapper">
-              <div class="footer-bottom">
-                &copy; 2023 <a href="https://creativitacontemporanea.cultura.gov.it/" target="_blank">Direzione generale Creatività contemporanea</a> del <a href="https://cultura.gov.it/" target="_blank" style="margin-left:0">Ministero della cultura</a>
+              <div class="footer-bottom row">
+                <div class="col-12 col-sm-8">
+                  &copy; 2023 <a href="https://creativitacontemporanea.cultura.gov.it/" target="_blank">Direzione generale Creatività contemporanea</a> del <a href="https://cultura.gov.it/" target="_blank" style="margin-left:0">Ministero della cultura</a>
+                </div>
+                <div class="col-12 text-start col-sm-4 text-sm-end">
+                  Repository: <a class="p-1 text-white" href="https://github.com/CityOpenSource/Luoghidelcontemporaneo" target="_blank"><svg class="icon icon-sm icon-white align-top"><use xlink:href="<?php echo get_template_directory_uri();?>/svg/sprites.svg#it-github"></use></svg>
+                    <span class="visually-hidden">GitHub</span></a>
+                </div> 
               </div>            
             </div>
           </div>
