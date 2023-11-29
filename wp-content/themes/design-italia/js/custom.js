@@ -131,5 +131,9 @@ jQuery(document).ready(function() {
             ride: 'carousel',
         })  
     }
-    var chart = new ApexCharts(document.querySelector("#chart"), options);chart.render();
+    if(document.querySelector("#chart")) {
+        var options = {};
+        var chart = new ApexCharts(document.querySelector("#chart"), options);
+        chart.render();
+    }
 });
