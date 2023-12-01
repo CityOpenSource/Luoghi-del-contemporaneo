@@ -35,7 +35,6 @@ function wpshout_frontend_post() {
 
         $tip = '';
         foreach($tipologie as $tipologia) {
-            print_r ($tipologia);
             if($tipologia->term_id == $_POST['tipologia']) {
                 $tip = $tipologia->name;
                 break;
