@@ -1,7 +1,10 @@
 <?php
  
 add_shortcode( 'wpshout_frontend_post', 'wpshout_frontend_post' ); 
-
+function wpdocs_set_html_mail_content_type() {
+    return 'text/html';
+}
+add_filter( 'wp_mail_content_type', 'wpdocs_set_html_mail_content_type' );
 function wpshout_frontend_post() {
     ob_start(); // start a buffer
     $wanted = '';
@@ -13,16 +16,85 @@ function wpshout_frontend_post() {
         require_once(ABSPATH . "wp-admin" . '/includes/file.php');
         require_once(ABSPATH . "wp-admin" . '/includes/media.php');
     }
-    if(wpshout_save_post_if_submitted()):
-        echo 'Saved your post successfully! :)';
-    else :
+    
+    $regioni = json_decode(file_get_contents(__DIR__.'/../js/localita.json'),true);
 
-    $regioni = json_decode(file_get_contents(__DIR__.'/../js/localita.json'));
-    $reg = array();
-    foreach($regioni as $k=>$regione) {
-        $reg["$k"] = $regione->nome;
-    }
-    asort($reg); 
+
+    if(wpshout_save_post_if_submitted()) {
+        echo 'Saved your post successfully! :)';
+    
+        $tipologie = get_terms([
+            'taxonomy' => 'tipologia',
+            'hide_empty' => false,
+        ]);
+
+        $servizi = get_terms([
+            'taxonomy' => 'servizio',
+            'hide_empty' => false,
+        ]);
+
+        $tip = '';
+        foreach($tipologie as $tipologia) {
+            print_r ($tipologia);
+            if($tipologia->term_id == $_POST['tipologia']) {
+                $tip = $tipologia->name;
+                break;
+            }
+        } 
+
+        $ser = [];
+        foreach($_POST['servizio_id'] as $servi) {
+            foreach($servizi as $servizio) {
+                if($servizio->term_id == $servi) $ser[] = $servizio->name;
+            }
+        }
+          
+        $regione = $regioni[$_POST['regione_id']]['nome'];
+        $provincia = $regioni[$_POST['regione_id']]['items'][$_POST['provincia_id']]['nome'];
+        $comune = $regioni[$_POST['regione_id']]['items'][$_POST['provincia_id']]['items'][$_POST['comune_id']];
+
+        $headers  = 'MIME-Version: 1.0' . "\r\n";
+        $headers .= 'Content-Transfer-Encoding: quoted-printable'."\r\n"
+                .'Content-Type: text/plain; charset=UTF-8' . "\r\n";
+        $headers .= 'From: DG-AAP - LUOGHI DEL CONTEMPORANEO <luoghidelcontemporaneo@beniculturali.it>' . "\r\n";
+        // $headers .= 'Reply-To: xxx@xxx.com' . "\r\n";    
+
+        $message = "RICHIESTA ADESIONE \n \n";
+        $message.= "Nome: {$_POST['intestazione']} \n";
+        $message.= "Stato: {$_POST['statogiuridico']} \n";
+        $message.= "Tipologia 1: {$tip} \n";
+        // $message.= "Tipologia 2:  \n";
+        $message.= "Localita: {$comune} \n";
+        $message.= "Via: {$_POST['indirizzo']}\n";
+        $message.= "Cap: {$_POST['cap']} \n";
+        $message.= "Provincia: {$provincia} \n";
+        $message.= "Regione: {$regione} \n";
+        $message.= "Telefono: {$_POST['telefono']} \n";
+        $message.= "Web: {$_POST['sitoweb']} \n";
+        $message.= "Email: {$_POST['email']} \n";
+        $message.= "Orari: {$_POST['orari']} \n";
+        $message.= "Costi: {$_POST['costobiglietti']} \n";
+        // $message.= "Social:  \n";
+        $message.= "Servizi: " . implode(', ', $ser) . " \n";
+        $message.= "Descrizione: {$_POST['description']} ";
+    
+        $mail1 = get_theme_mod( 'mail1' );
+        $mail2 = get_theme_mod( 'mail2' );
+     
+        if(strlen($mail1)) { 
+            $sent = mail( $mail1, 'Richiesta adesione Luoghi del Contemporaneo', $message, $headers );
+        } 
+        if(strlen($mail2)) { 
+            $sent = mail( $mail2, 'Richiesta adesione Luoghi del Contemporaneo', $message, $headers );
+        }
+
+    } else {
+
+        $reg = array();
+        foreach($regioni as $k=>$regione) {
+            $reg["$k"] = $regione->nome;
+        }
+        asort($reg);
     ?>
 <div id="postbox">
     <form id="new_post" name="new_post" method="post" enctype="multipart/form-data">
@@ -204,9 +276,9 @@ function wpshout_frontend_post() {
     </form>
 </div>
     <?php
-    $wanted = ob_get_clean(); // get the buffer contents and clean it
     
-    endif;
+    };
+    $wanted = ob_get_clean(); // get the buffer contents and clean it
     return $wanted;
 }
 
@@ -320,6 +392,8 @@ function wpshout_save_post_if_submitted() {
         } 
         update_post_meta($new_post, 'gallery_data', $gallery_data);
     }
+
+
 
     return true;
 }

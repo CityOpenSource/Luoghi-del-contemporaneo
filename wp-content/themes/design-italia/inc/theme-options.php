@@ -21,6 +21,17 @@ function my_theme_options( $wp_customize ) {
             'description' => __('Inserisci i token qui', 'mytheme'), 
         ) 
     );
+    $wp_customize->add_section( 
+        'mytheme_mail_options', 
+        array(
+            'title'       => __( 'Mail', 'mytheme' ),
+            'priority'    => 100,
+            'capability'  => 'edit_theme_options',
+            'description' => __('Destinatari post', 'mytheme'), 
+        ) 
+    );
+    $wp_customize->add_setting( 'mail1', array());
+    $wp_customize->add_setting( 'mail2', array());
     $wp_customize->add_setting( 'titolo1', array());
     $wp_customize->add_setting( 'titolo2', array());
     $wp_customize->add_setting( 'indirizzo', array());
@@ -38,6 +49,22 @@ function my_theme_options( $wp_customize ) {
     $wp_customize->add_setting( 'whatsapp', array());
     $wp_customize->add_setting( 'stadiamaps', array());
 
+    $wp_customize->add_control('mail1', 
+        array(
+            'type'=>'text', 
+            'section' => 'mytheme_mail_options',
+            'label' => 'Mail 1', 
+            'priority' => 10
+        )
+    );
+    $wp_customize->add_control('mail2', 
+        array(
+            'type'=>'text', 
+            'section' => 'mytheme_mail_options',
+            'label' => 'Mail 2',
+            'priority' => 10
+        )
+    );
     $wp_customize->add_control('titolo1', 
         array(
             'type'=>'text', 
