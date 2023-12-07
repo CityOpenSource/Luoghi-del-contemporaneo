@@ -7,36 +7,6 @@
 
   get_header();
 
-
-// $sql = "SELECT * FROM {$wpdb->prefix}postmeta WHERE meta_key = 'gallery_data' AND meta_id<140000 GROUP BY post_id ORDER BY post_id ASC";
-// echo $sql;
-// $items = $wpdb->get_results($sql);
-// // $items = array_splice($items, 0, 10);
-// echo '<pre>';
-// foreach ($items as $key => $item) {
-//     // print_r($item);
-//     $array = unserialize($item->meta_value);
-//     $array['post_id'] = [];
-//     // print_r($array);
-//     foreach ($array['image_url'] as $key2 => $value2) {
-//       $array['image_url'][$key2] = str_replace('https://luoghidelcontemporaneo.beniculturali.it/reserved/foto/','/wp-content/uploads/2023/11/',$value2);
-//       $id = str_replace(array('/wp-content/uploads/2023/11/','.jpg'),array('',''),strtolower($array['image_url'][$key2]));
-//       // echo "$id $id-1\n";
-//       $array['image_url'][$key2] = str_replace($id,$id-1,$array['image_url'][$key2]);
-//       $array['post_id'][$key2] = intval($id) + 2000;
-//     }
-//     $items[$key]->meta_value = serialize($array);
-//     unset($items[$key]->meta_id);
-//     $items[$key]->meta_value = str_replace("'","\'",$items[$key]->meta_value);
-//     $ql = "INSERT INTO {$wpdb->prefix}postmeta(post_id,meta_key,meta_value) VALUES ({$items[$key]->post_id},'{$items[$key]->meta_key}','{$items[$key]->meta_value}')";
-//     echo "$ql\n";
-//     // print_r($array);
-//     // $wpdb->get_results($ql);
-
-// }
-// die();
-
-
   $metas = get_post_meta( $post->ID);
   $gallery = get_post_meta( $post->ID, 'gallery_data', true );
   $citta = get_post_meta( $post->ID, 'luogo_localita_id', true );
@@ -220,10 +190,38 @@
               <div class="map-wrapper map-column mt-4"> 
                 <div id="mapdettaglio" style="width: 100%; aspect-ratio: 320/180;"></div>
                 <script>
-                  var light = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=<?php echo get_theme_mod( 'stadiamaps' );?>', {
-                      maxZoom: 19,
-                      attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
-                  });
+            var osm = L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap'
+            });
+
+            var osmHOT = L.tileLayer('https://{s}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
+            });
+
+            var light = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth/{z}/{x}/{y}.png?api_key=<?php echo get_theme_mod( 'stadiamaps' );?>', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
+            });
+
+            var dark = L.tileLayer('https://tiles.stadiamaps.com/tiles/alidade_smooth_dark/{z}/{x}/{y}.png?api_key=<?php echo get_theme_mod( 'stadiamaps' );?>', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
+            });
+
+            var satellite = L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}', {
+                maxZoom: 19,
+                attribution: '© OpenStreetMap contributors, Tiles style by Humanitarian OpenStreetMap Team hosted by OpenStreetMap France'
+            });
+
+            
+            var baseMaps = {
+                "Mappa Light": light,
+                "Mappa Dark": dark,
+                "Mappa Satellitare": satellite,
+                "Mappa Standard": osm,
+            };
                     var map = L.map('mapdettaglio',{
                         center: [<?php echo get_post_meta( $post->ID, 'luogo_lat', true );?>, <?php echo get_post_meta( $post->ID, 'luogo_lon', true );?>],
                         layers: [light],
@@ -231,7 +229,7 @@
                         dragging: !L.Browser.mobile
                     });
                     L.circleMarker([<?php echo get_post_meta( $post->ID, 'luogo_lat', true );?>, <?php echo get_post_meta( $post->ID, 'luogo_lon', true );?>], {weight:0.5,radius:8, opacity: 0.9, color: '<?php echo $colore;?>', fillColor:'<?php echo $tipologia->tipologia_colore;?>', fillOpacity: 1}).addTo(map);
-
+            	L.control.layers(baseMaps/* , overlays */).addTo(map);
                     // Check if geolocation is available in the browser
                     if ("geolocation" in navigator) {
                         // Get the user's current location
@@ -285,10 +283,10 @@
                         <?php if(!empty(get_post_meta( $post->ID, 'luogo_telefono', true ))):?><p>T <?php echo get_post_meta( $post->ID, 'luogo_telefono', true );?></p><?php endif;?>
                         <?php if(!empty(get_post_meta( $post->ID, 'luogo_web', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_web', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sul sito di <?php the_title();?>" href="<?php echo get_post_meta( $post->ID, 'luogo_web', true );?>">Web</a></p><?php endif;?>
                         <?php if(!empty(get_post_meta( $post->ID, 'luogo_email', true ))):?><p><a aria-label="invia un'email a <?php echo get_post_meta( $post->ID, 'luogo_email', true );?>< - apertura casella postale" title="invia un'email a <?php echo get_post_meta( $post->ID, 'luogo_email', true );?> - apertura casella postale" href="mailto:<?php echo get_post_meta( $post->ID, 'luogo_email', true );?>">Email</a></p><?php endif;?>
-                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_facebook', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_facebook', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina Facebook di <?php the_title();?>" href="<?php echo get_post_meta( $post->ID, 'luogo_facebook', true );?>">Facebook</a></p><?php endif;?>
-                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_twitter', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_twitter', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina X di <?php the_title();?>" href="<?php echo get_post_meta( $post->ID, 'luogo_twitter', true );?>">X</a></p><?php endif;?>
-                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_instagram', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_instagram', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina Instagram di <?php the_title();?>" href="<?php echo get_post_meta( $post->ID, 'luogo_instagram', true );?>">Instagram</a></p><?php endif;?>
-                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_youtube', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_youtube', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina YouTube di <?php the_title();?>" href="<?php echo get_post_meta( $post->ID, 'luogo_youtube', true );?>">YouTube</a></p></div><?php endif;?>
+                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_facebook', true ))):?><p><a aria-label="scopri di più su <?php $url = get_post_meta( $post->ID, 'luogo_facebook', true ); if(strpos($url, 'http')===false) $url = 'https://'.$url; echo $url;?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina Facebook di <?php the_title();?>" href="<?php $url = get_post_meta( $post->ID, 'luogo_facebook', true ); if(strpos($url, 'http')===false) $url = 'https://'.$url; echo $url;?>">Facebook</a></p><?php endif;?>
+                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_twitter', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_twitter', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina X di <?php the_title();?>" href="<?php $url = get_post_meta( $post->ID, 'luogo_twitter', true ); if(strpos($url, 'http')===false) $url = 'https://'.$url; echo $url;?>">X</a></p><?php endif;?>
+                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_instagram', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_instagram', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina Instagram di <?php the_title();?>" href="<?php $url = get_post_meta( $post->ID, 'luogo_instagram', true ); if(strpos($url, 'http')===false) $url = 'https://'.$url; echo $url;?>">Instagram</a></p><?php endif;?>
+                        <?php if(!empty(get_post_meta( $post->ID, 'luogo_youtube', true ))):?><p><a aria-label="scopri di più su <?php echo get_post_meta( $post->ID, 'luogo_youtube', true );?> - link esterno - apertura nuova scheda" target="_blank" title="vai sulla pagina YouTube di <?php the_title();?>" href="<?php $url = get_post_meta( $post->ID, 'luogo_youtube', true ); if(strpos($url, 'http')===false) $url = 'https://'.$url; echo $url;?>">YouTube</a></p></div><?php endif;?>
                     </div>
                   </div>
                 </div>
@@ -318,7 +316,7 @@
             <article id="note" class="it-page-section mb-5">
             <h2 class="mb-3"><?php _e('Note','design-italia');?></h2>
               <div class="link-list-wrapper mb-3">
-                <?php echo $metas['luogo_note'][0];?>
+                <?php echo nl2br($metas['luogo_note'][0]);?>
               </div>
             </article>
             <?php endif;?>
@@ -328,41 +326,11 @@
             <h2 class="mb-3"><?php _e('Informazioni varie','design-italia');?></h2>
             <div class="link-list-wrapper">
               <ul class="link-list">
-                <?php echo implode("\n", $info);?>
-                <!-- <li><a class="list-item px-0" href="#"><span>Sogaer - Aeroporto di Cagliari</span></a></li>
-                <li><a class="list-item px-0" href="#"><span>Autorità Portuale di Cagliari</span></a></li>
-                <li><a class="list-item px-0" href="#"><span>ARST</span></a></li>
-                <li><a class="list-item px-0" href="#"><span>CTM Cagliari</span></a></li>
-                <li><a class="list-item px-0" href="#"><span>Trenitalia</span></a></li>
-                <li><a class="list-item px-0" href="#"><span>Camera di Commercio di Cagliari</span></a></li>-->
+                <?php echo implode("<br />\n", $info);?>
               </ul>
             </div>
             </article>
             <?php endif;?>
-
-            <!-- <article id="patrocinio" class="it-page-section mb-5">
-              <h2 class="mb-3">Patrocinato da</h2>
-              <div class="link-list-wrapper mb-3">
-                <ul class="link-list">
-                  <li><a class="list-item px-0" href="#"><span>Regione Autonome della Sardegna</span></a></li>
-                </ul>
-              </div>
-            </article> -->
-    
-            <!-- <article id="sponsor" class="it-page-section mb-5">
-              <h2 class="mb-3">Sponsor</h2>
-              <div class="link-list-wrapper">
-                <ul class="link-list">
-                  <li><a class="list-item px-0" href="#"><span>Provincia di Cagliari</span></a></li>
-                  <li><a class="list-item px-0" href="#"><span>Sogaer - Aeroporto di Cagliari</span></a></li>
-                  <li><a class="list-item px-0" href="#"><span>Autorità Portuale di Cagliari</span></a></li>
-                  <li><a class="list-item px-0" href="#"><span>ARST</span></a></li>
-                  <li><a class="list-item px-0" href="#"><span>CTM Cagliari</span></a></li>
-                  <li><a class="list-item px-0" href="#"><span>Trenitalia</span></a></li>
-                  <li><a class="list-item px-0" href="#"><span>Camera di Commercio di Cagliari</span></a></li>
-                </ul>
-              </div>
-            </article> -->
     
             <article id="ultimo-aggiornamento" class="it-page-section mt-5">
             <?php get_template_part( "template-parts/single/bottom" ); ?>
