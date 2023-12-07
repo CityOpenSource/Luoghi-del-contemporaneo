@@ -871,7 +871,7 @@ get_header();
 
                                     <!-- <td><?php echo $localita->provincia_nome;?></td> -->
                                     <td><?php echo $localita->localita_nome;?> (<?php echo $localita->provincia_sigla;?>)</td>
-                                    <td><?php echo the_title();?></td>
+                                    <td><a href="<?php echo get_permalink( );?>"><?php echo the_title();?></a></td>
                                     <td><?php echo $custom_fields['luogo_autore'][0];?></td>
                                     <td><?php echo $tipologia->name;?></td>
                                     <td><?php echo $custom_fields['luogo_realizzazione'][0];?></td>
