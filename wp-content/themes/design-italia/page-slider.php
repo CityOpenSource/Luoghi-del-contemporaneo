@@ -57,7 +57,7 @@ endforeach;
                 <div class="carousel-inner p-relative">
                     <?php echo implode("\n",$slides);?>
                     <div id="gradientTop"></div>
-                    <div class="carousel-caption d-none d-md-block" style="top:1.25rem" ><svg height="86" width="260" aria-hidden="true" style="height:86px!important;width:260px!important;z-index:11;"><image height="86" width="260" xlink:href="https://luoghidelcontemporaneo.mappi-na.it/wp-content/themes/design-italia/svg/logo.svg"></image></svg></div>
+                    <div class="carousel-caption d-none d-md-block" style="top:1.25rem" ><svg height="86" width="260" aria-hidden="true" style="height:86px!important;width:260px!important;z-index:11;"><image height="86" width="260" xlink:href="<?php echo get_template_directory_uri();?>/svg/logo.svg"></image></svg></div>
                 </div>
                 <button class="carousel-control-prev" type="button" data-bs-target="#carouselHome" data-bs-slide="prev">
                     <span class="carousel-control-prev-icon" aria-hidden="true"></span>
