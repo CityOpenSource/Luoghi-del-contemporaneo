@@ -7,6 +7,39 @@
 
 
 
+
+function fb_opengraph() {
+    global $post;
+ 
+    if(is_single()) {
+        if(has_post_thumbnail($post->ID)) {
+            $img_src = wp_get_attachment_image_src(get_post_thumbnail_id( $post->ID ), 'medium');
+        } else {
+            $img_src = get_stylesheet_directory_uri() . '/img/opengraph_image.jpg';
+        }
+        if($excerpt = $post->post_excerpt) {
+            $excerpt = strip_tags($post->post_excerpt);
+            $excerpt = str_replace("", "'", $excerpt);
+        } else {
+            $excerpt = get_bloginfo('description');
+        }
+        ?>
+ 
+    <meta property="og:title" content="<?php echo the_title(); ?>"/>
+    <meta property="og:description" content="<?php echo $excerpt; ?>"/>
+    <meta property="og:type" content="article"/>
+    <meta property="og:url" content="<?php echo the_permalink(); ?>"/>
+    <meta property="og:site_name" content="<?php echo get_bloginfo(); ?>"/>
+    <meta property="og:image" content="<?php echo $img_src; ?>"/>
+ 
+<?php
+    } else {
+        return;
+    }
+}
+add_action('wp_head', 'fb_opengraph', 5);
+
+
 include __DIR__.'/inc/api.php';
 include __DIR__.'/inc/cpt-and-taxonomies.php';
 include __DIR__.'/inc/form.php';
@@ -275,8 +308,8 @@ function justread_filter_archive( $query ) {
                 $query->set('orderby','luogo_autore');
             break;
             case 'data':  
-                $query->set('meta_key','luogo_realizzazione');
-                $query->set('orderby','luogo_realizzazione');
+                $query->set('meta_key','luogo_collocazione');
+                $query->set('orderby','luogo_collocazione');
             break;
             default:
                 $query->set('orderby','title');
@@ -296,111 +329,23 @@ function justread_filter_archive( $query ) {
 }
 add_action( 'pre_get_posts', 'justread_filter_archive');
 
+// function orderby_tax_clauses( $clauses, $wp_query ) {
+//     global $wpdb;
+//     $taxonomies = get_taxonomies();
+//     foreach ($taxonomies as $taxonomy) {
+//         if ( isset( $wp_query->query['orderby'] ) && $taxonomy == $wp_query->query['orderby'] ) {
+//             $clauses['join'] .=<<<SQL
+// LEFT OUTER JOIN {$wpdb->term_relationships} ON {$wpdb->posts}.ID={$wpdb->term_relationships}.object_id
+// LEFT OUTER JOIN {$wpdb->term_taxonomy} USING (term_taxonomy_id)
+// LEFT OUTER JOIN {$wpdb->terms} USING (term_id)
+// SQL;
+//             $clauses['where'] .= " AND (taxonomy = '{$taxonomy}' OR taxonomy IS NULL)";
+//             $clauses['groupby'] = "object_id";
+//             $clauses['orderby'] = "GROUP_CONCAT({$wpdb->terms}.name ORDER BY name ASC) ";
+//             $clauses['orderby'] .= ( 'ASC' == strtoupper( $wp_query->get('order') ) ) ? 'ASC' : 'DESC';
+//         }
+//     }
+//     return $clauses;
+// }
 
-
-
-//INSERT INTO `luoghicontemporaneo_posts` (`ID`, `post_author`, `post_date`, `post_date_gmt`, `post_content`, `post_title`, `post_excerpt`, `post_status`, `comment_status`, `ping_status`, `post_password`, `post_name`, `to_ping`, `pinged`, `post_modified`, `post_modified_gmt`, `post_content_filtered`, `post_parent`, `guid`, `menu_order`, `post_type`, `post_mime_type`, `comment_count`) SELECT luogo_id + 1000, '1', luogo_data_inserimento, '0000-00-00 00:00:00', luogo_descrizione_ita, luogo_nome, '', 'publish', 'closed', 'closed', '', '', '', '', luogo_data_inserimento, '0000-00-00 00:00:00', '', '0', CONCAT('https://luoghidelcontemporaneo.mappi-na.it/?post_type=luogocontemporaneo&#038;p=', luogo_id + 1000), '0', 'luogocontemporaneo', '', '0' FROM `luoghicontemporaneo_luoghi`  
-
-/* UPDATE `luoghicontemporaneo_posts` SET post_name = lower(post_title),
-post_name = replace(post_name, '.', ' '),
-post_name = replace(post_name, '\'', '-'),
-post_name = replace(post_name,'š','s'),
-post_name = replace(post_name,'Ð','Dj'),
-post_name = replace(post_name,'ž','z'),
-post_name = replace(post_name,'Þ','B'),
-post_name = replace(post_name,'ß','Ss'),
-post_name = replace(post_name,'à','a'),
-post_name = replace(post_name,'á','a'),
-post_name = replace(post_name,'â','a'),
-post_name = replace(post_name,'ã','a'),
-post_name = replace(post_name,'ä','a'),
-post_name = replace(post_name,'å','a'),
-post_name = replace(post_name,'æ','a'),
-post_name = replace(post_name,'ç','c'),
-post_name = replace(post_name,'è','e'),
-post_name = replace(post_name,'é','e'),
-post_name = replace(post_name,'ê','e'),
-post_name = replace(post_name,'ë','e'),
-post_name = replace(post_name,'ì','i'),
-post_name = replace(post_name,'í','i'),
-post_name = replace(post_name,'î','i'),
-post_name = replace(post_name,'ï','i'),
-post_name = replace(post_name,'ð','o'),
-post_name = replace(post_name,'ñ','n'),
-post_name = replace(post_name,'ò','o'),
-post_name = replace(post_name,'ó','o'),
-post_name = replace(post_name,'ô','o'),
-post_name = replace(post_name,'õ','o'),
-post_name = replace(post_name,'ö','o'),
-post_name = replace(post_name,'ø','o'),
-post_name = replace(post_name,'ù','u'),
-post_name = replace(post_name,'ú','u'),
-post_name = replace(post_name,'û','u'),
-post_name = replace(post_name,'ý','y'),
-post_name = replace(post_name,'ý','y'),
-post_name = replace(post_name,'þ','b'),
-post_name = replace(post_name,'ÿ','y'),
-post_name = replace(post_name,'ƒ','f'),
-post_name = replace(post_name, 'œ', 'oe'),
-post_name = replace(post_name, '€', 'euro'),
-post_name = replace(post_name, '$', 'dollars'),
-post_name = replace(post_name, '£', ''),
-post_name = trim(post_name),
-post_name = replace(post_name, ' ', '-'),
-post_name = replace(post_name, '--', '-'),
-post_name = replace(post_name, '--', '-'),
-post_name = replace(post_name, '--', '-'),
-post_name = replace(post_name, '--', '-') WHERE ID > 1000;
-
-
-
-UPDATE `luoghicontemporaneo_luoghi` SET luogo_url = lower(luogo_nome),
-luogo_url = replace(luogo_url, '.', ' '),
-luogo_url = replace(luogo_url, '\'', '-'),
-luogo_url = replace(luogo_url,'š','s'),
-luogo_url = replace(luogo_url,'Ð','Dj'),
-luogo_url = replace(luogo_url,'ž','z'),
-luogo_url = replace(luogo_url,'Þ','B'),
-luogo_url = replace(luogo_url,'ß','Ss'),
-luogo_url = replace(luogo_url,'à','a'),
-luogo_url = replace(luogo_url,'á','a'),
-luogo_url = replace(luogo_url,'â','a'),
-luogo_url = replace(luogo_url,'ã','a'),
-luogo_url = replace(luogo_url,'ä','a'),
-luogo_url = replace(luogo_url,'å','a'),
-luogo_url = replace(luogo_url,'æ','a'),
-luogo_url = replace(luogo_url,'ç','c'),
-luogo_url = replace(luogo_url,'è','e'),
-luogo_url = replace(luogo_url,'é','e'),
-luogo_url = replace(luogo_url,'ê','e'),
-luogo_url = replace(luogo_url,'ë','e'),
-luogo_url = replace(luogo_url,'ì','i'),
-luogo_url = replace(luogo_url,'í','i'),
-luogo_url = replace(luogo_url,'î','i'),
-luogo_url = replace(luogo_url,'ï','i'),
-luogo_url = replace(luogo_url,'ð','o'),
-luogo_url = replace(luogo_url,'ñ','n'),
-luogo_url = replace(luogo_url,'ò','o'),
-luogo_url = replace(luogo_url,'ó','o'),
-luogo_url = replace(luogo_url,'ô','o'),
-luogo_url = replace(luogo_url,'õ','o'),
-luogo_url = replace(luogo_url,'ö','o'),
-luogo_url = replace(luogo_url,'ø','o'),
-luogo_url = replace(luogo_url,'ù','u'),
-luogo_url = replace(luogo_url,'ú','u'),
-luogo_url = replace(luogo_url,'û','u'),
-luogo_url = replace(luogo_url,'ý','y'),
-luogo_url = replace(luogo_url,'ý','y'),
-luogo_url = replace(luogo_url,'þ','b'),
-luogo_url = replace(luogo_url,'ÿ','y'),
-luogo_url = replace(luogo_url,'ƒ','f'),
-luogo_url = replace(luogo_url, 'œ', 'oe'),
-luogo_url = replace(luogo_url, '€', 'euro'),
-luogo_url = replace(luogo_url, '$', 'dollars'),
-luogo_url = replace(luogo_url, '£', ''),
-luogo_url = trim(luogo_url),
-luogo_url = replace(luogo_url, ' ', '-'),
-luogo_url = replace(luogo_url, '--', '-'),
-luogo_url = replace(luogo_url, '--', '-'),
-luogo_url = replace(luogo_url, '--', '-'),
-luogo_url = replace(luogo_url, '--', '-') WHERE ID > 1000; */
+// add_filter('posts_clauses', 'orderby_tax_clauses', 10, 2 );
