@@ -10,12 +10,10 @@ global $post;
 global $wpdb;
 
 $regioni = json_decode(file_get_contents(__DIR__.'/js/localita.json'));
-// print_r($regioni);
 
 $taxonomies = get_object_taxonomies( array( 'post_type' => 'luogocontemporaneo' ) );   
 $servizi = get_categories('taxonomy=servizio&type=luogocontemporaneo'); 
 $tipologie = get_categories('taxonomy=tipologia&type=luogocontemporaneo');  
-// print_r($tipologie);
 
 $category = $_GET['tipologia_id'];
 if($_GET['category'] && !is_array($_GET['category']) && strlen($_GET['category'])) {
@@ -84,16 +82,14 @@ function get_args() {
     'luogo_data_inserimento',
     'luogo_note',
     // 'luogo_url',
-    'luogo_localita_id',
-    'luogo_collezione',
+    'luogo_localita_id', 
     
     'luogo_autore',
     'luogo_realizzazione',
     'luogo_collocazione',
     'luogo_dimensioni',
     'luogo_promotore',
-    'luogo_curatore', 
-    // 'luogo_collocazione',
+    'luogo_curatore',  
     'luogo_dimensioni',
     'luogo_promotore',
     'luogo_curatore', 
@@ -571,10 +567,8 @@ get_header();
             ?>var marker<?php echo $k;?> = L.circleMarker([<?php echo $lat;?>, <?php echo $lon;?>], {weight:0.5,radius:8, opacity: 0.9, color: '#000000', fillColor:'<?php echo $colore;?>', fillOpacity: 1}).bindPopup("<strong><a href=\"/esplora/<?php echo $postslug;?>\"><img style=\"width:300px;height:200px;object-fit:cover;object-position:center;margin-bottom:20px;\" src=\"<?php echo $images['image_url'][0];?>\" /><?php echo str_replace('"', '\"', $postname);?></a></strong><br><strong><?php echo str_replace("'","\'", $localita->localita_nome);?> (<?php echo $localita->provincia_sigla;?>)</strong>");marker<?php echo $k;?>.addTo(map); marker<?php echo $k;?>.addTo(group); marker<?php echo $k;?>.addTo(groups['<?php echo str_replace('-','',$tipologiaslug);?>']);
             <?php endforeach;?>var overlays = { <?php foreach($groups as $slug=>$el): echo str_replace('-','',$slug).': groups[\''.str_replace('-','',$slug).'\'], ';endforeach;?> }; 
             L.control.layers(baseMaps/* , overlays */).addTo(map);
-            var overlays2 = { }; 
-            // L.control.layers(null, overlays2, {position: 'topleft'}).addTo(map);
-            map.fitBounds(group.getBounds());
-            // map.fitBounds(group.getBounds(),{paddingBottomRight:[window.innerWidth/2,0]});
+            var overlays2 = { };  
+            map.fitBounds(group.getBounds()); 
 
             
             // Check if geolocation is available in the browser
@@ -607,38 +601,6 @@ get_header();
                 console.error("Geolocation is not available in this browser.");
             }
         </script>
-
-        <div class="container">
-            <div class="row justify-content-center">
-                <div class="col-12 col-lg-10">
-                    <?php //get_template_part("template-parts/common/breadcrumb"); ?>
-                    <!-- <div class="cmp-hero">
-                        <section class="it-hero-wrapper bg-white align-items-start">
-                            <div class="it-hero-text-wrapper pt-0 ps-0 pb-4 pb-lg-60">
-                                <h1 class="text-black title-xxxlarge mb-2" data-element="page-name">
-                                    Esplora
-                                </h1>
-                                <p class="text-black titillium text-paragraph">
-                                    <?php //echo $description; ?>
-                                </p>
-                            </div>
-                        </section>
-                    </div> -->
-                </div>
-            </div>
-        </div>
-        <div class="container-fluid px-0">
-            <!-- <article class="article-wrapper"> -->
-
-                <!-- <div class="row variable-gutters"> -->
-                    <!-- <div class="col-lg-12"> -->
-                        
-
-                    <!-- </div> -->
-                <!-- </div> -->
-            <!-- </article> -->
-        </div>
-
 
         <form class="container d-md-none d-block" method="get" action="/esplora/">
             <div class="row">
@@ -777,8 +739,6 @@ get_header();
                                         break;
                                     } 
                                 } 
-                                // $query = "SELECT * FROM {$wpdb->prefix}luoghi_foto AS f WHERE f.foto_luogo_id = " . ($post->ID-1000)." AND f.foto_tipo = 2 LIMIT 0, 1";
-                                // $foto = $wpdb->get_results( $query, OBJECT )[0];
                                 ?>
                                 <div class="col-md-6 col-xl-4">
                                     <div class="card-wrapper border border-light rounded shadow-sm" style="border-top:6px <?php echo $colore;?> solid !important">
@@ -834,15 +794,12 @@ get_header();
                             <thead>
                                 <tr>
                                     <th scope="row"></th>
-                                    <!-- <th>Provincia</th> -->
-                                    <!-- <th><a class="sortlink" href="<?php echo $url.'?'.implode('&',$ar).'&orderby=localita&orderdir='.($orderby==='localita' ? ($orderdir == 'desc' ? 'asc' : 'desc') : 'asc');?>#card-tab2"><?php _e('Località','design-italia');?></a><?php if($orderby==='localita'):?><svg class="icon icon-sm right"><use href="<?php echo get_template_directory_uri();?>/svg/sprites.svg#it-arrow-<?php echo $orderdir == 'desc' ? 'down' : 'up';?>-triangle"></use></svg><?php endif;?></th> -->
                                     <th><?php _e('Località','design-italia');?></th>
                                     <th><a class="sortlink" href="<?php echo $url.'?'.implode('&',$ar).'&orderby=denominazione&orderdir='.($orderby==='denominazione' ? ($orderdir == 'desc' ? 'asc' : 'desc') : 'asc');?>#card-tab2"><?php _e('Denominazione','design-italia');?></a><?php if($orderby==='denominazione'):?><svg class="icon icon-sm right"><use href="<?php echo get_template_directory_uri();?>/svg/sprites.svg#it-arrow-<?php echo $orderdir == 'desc' ? 'down' : 'up';?>-triangle"></use></svg><?php endif;?></th>
                                     <th><a class="sortlink" href="<?php echo $url.'?'.implode('&',$ar).'&orderby=autore&orderdir='.($orderby==='autore' ? ($orderdir == 'desc' ? 'asc' : 'desc') : 'asc');?>#card-tab2"><?php _e('Autore','design-italia');?></a><?php if($orderby==='autore'):?><svg class="icon icon-sm right"><use href="<?php echo get_template_directory_uri();?>/svg/sprites.svg#it-arrow-<?php echo $orderdir == 'desc' ? 'down' : 'up';?>-triangle"></use></svg><?php endif;?></th>
                                     <th><?php _e('Tipologia','design-italia');?></th>
                                     <th><a class="sortlink" href="<?php echo $url.'?'.implode('&',$ar).'&orderby=data&orderdir='.($orderby==='data' ? ($orderdir == 'desc' ? 'asc' : 'desc') : 'asc');?>#card-tab2"><?php _e('Data','design-italia');?></a><?php if($orderby==='data'):?><svg class="icon icon-sm right"><use href="<?php echo get_template_directory_uri();?>/svg/sprites.svg#it-arrow-<?php echo $orderdir == 'desc' ? 'down' : 'up';?>-triangle"></use></svg><?php endif;?></th>
                                     <th><?php _e('Servizi','design-italia');?></th>
-                                    <!-- <th>Visualizza</th> -->
                                 </tr>
                             </thead>
                             <tbody>
@@ -855,7 +812,6 @@ get_header();
                                         $images        = unserialize($custom_fields['gallery_data'][0]);
                                         $tipologia     = wp_get_post_terms( $post->ID, 'tipologia' )[0];
                                         $servizi       = wp_get_post_terms( $post->ID, 'servizio' );
-                                        // print_r($servizi);die();
 
                                         $loc = $custom_fields['luogo_localita_id'][0]; 
                                         foreach($regioni2 as $k=>$v) {
@@ -868,15 +824,12 @@ get_header();
                                 ?>
                                 <tr>
                                     <td><?php foreach($images['image_url'] as $k=>$img):?><a href="<?php echo $img;?>" data-title="<?php echo esc_html( get_the_title() );?>" data-lightbox="<?php echo $images['image_url'][0];?>"><?php echo $k==0 ? '<img src="'.$img.'" style="object-fit:cover;width:100px;height:100px;" alt="'.$img.'" />':'';?></a><?php endforeach;?></td>
-
-                                    <!-- <td><?php echo $localita->provincia_nome;?></td> -->
                                     <td><?php echo $localita->localita_nome;?> (<?php echo $localita->provincia_sigla;?>)</td>
                                     <td><a href="<?php echo get_permalink( );?>"><?php echo the_title();?></a></td>
                                     <td><?php echo $custom_fields['luogo_autore'][0];?></td>
                                     <td><?php echo $tipologia->name;?></td>
                                     <td><?php echo $custom_fields['luogo_realizzazione'][0];?></td>
-                                    <td><?php $services = []; foreach($servizi as $k=>$servizio): $services[] = $servizio->name;endforeach; echo implode('<br/>',$services);?></td>
-                                    <!-- <td><a href="<?php echo get_permalink( );?>">Apri</a></td> -->
+                                    <td><?php $services = []; foreach($servizi as $k=>$servizio): $services[] = $servizio->name;endforeach; echo implode('<br/>',$services);?></td> 
                                 </tr>
                                     <?php
                                     endwhile;

@@ -8,8 +8,7 @@
 global $post;
 get_header();
 
-$content = str_replace(array("\n","\r"),array('',''), get_the_content( ));
-// echo $content;
+$content = str_replace(array("\n","\r"),array('',''), get_the_content( )); 
 
 $ereg = "|<article.*id=\"(.*)\".*>.*<h2.*>(.*)</h2>|Ui";
 $ereg = "|<article.*id=\"([^\"]*)\"[^>]*>.*<h2[^>]*>([^<]*)</h2>|Umi";
